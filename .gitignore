@@ -1,0 +1,11 @@
+# Dependencias
+lyric_formatter
+
+.env
+.env.local
+*.log
+
+dist/
+build/
+.cache/
+__pycache__/
