@@ -15,7 +15,7 @@ A desktop app that shows **time-synced lyrics** for whatever you're playing on S
 
 The app reads the playback position from the Windows media controls, so it doesn't need a Spotify API key or a Spotify login.
 
-> [CAUTION]
+> [WARNING]
 > **Discord sync** uses a user account token, which violates Discord's Terms of Service (self-botting). Your account could be banned. Use at your own risk; I accept no responsibility for actions taken against your account.
 
 ## Requirements
@@ -74,9 +74,7 @@ Pick any combination of languages from the dropdown, or choose **ALL**. Profanit
 ### Discord sync
 
 Turns on status updates and stores your Discord token in the system keychain (Windows Credential Manager) through [`keyring`](https://pypi.org/project/keyring/).
-
-> [!WARNING]
-> Using a **user account token** to change your status is considered self-botting and **violates Discord's Terms of Service**. Your account could be suspended. Use this feature at your own risk. Never share your token or commit it to a repository.
+> READ WARNING AT THE END OF THE FEATURES SECTION
 
 ## Configuration and data
 
@@ -86,48 +84,11 @@ Turns on status updates and stores your Discord token in the system keychain (Wi
 | Discord token | OS keychain (service `SpotiSync`) |
 | Censor lists and log | `censor_lists/` |
 
-## Project structure
-
-```
-.
-├── main.py              # pywebview window, settings, background asyncio loop
-├── lyrics_main.py       # Spotify playback, lyrics, censorship and Discord logic
-├── lyrics_api.py        # lyrics lookup and Discord status client
-├── censor_lists/
-│   ├── blacklist.txt
-│   ├── whitelist.txt
-│   └── censor_logs.txt
-└── docs/
-    └── screenshot.png
-```
-
-## Frontend API
-
-The Python side drives the interface with `window.evaluate_js(...)`:
-
-| Function | Description |
-|----------|-------------|
-| `setLyrics(lines)` | Load lyrics. Accepts `["text", ...]` or `[{time: ms, text: "..."}, ...]` |
-| `setActive(index)` | Highlight a line and scroll it to the center |
-| `setPosition(ms)` | Highlight the line for a playback position (needs timestamps) |
-| `setTrack(title, artists, cover)` | Update the title, artists and cover image |
-| `applySettings(settings)` | Restore saved settings into the UI |
-
-The interface calls back into Python through `Api.update_settings(settings)` every time an option changes, with this shape:
-
-```json
-{
-  "decorators": { "enabled": true, "value": "CLOCKS" },
-  "censor":     { "enabled": true, "all": false, "languages": ["en", "es"] },
-  "discord":    { "enabled": false }
-}
-```
-
 ## Troubleshooting
 
 - **No lyrics appear.** Not every song has time-synced lyrics available. Check the console for `<-- No synced lyrics found -->`.
 - **Nothing happens at all.** Make sure the app is the desktop Spotify client, not the web player, and that a track is actually playing.
-- **No console output.** Run with `python -u main.py`, or start the window with `webview.start(background, debug=True)` and use *Inspect* to see JavaScript errors.
+- **No console output.** Run with `python -u app.py`, or start the window with `webview.start(background, debug=True)` and use *Inspect* to see JavaScript errors.
 - **"Token saved" never shows up on Linux/macOS.** The app is Windows-only, so keyring support on other platforms isn't tested.
 
 ## Disclaimer
