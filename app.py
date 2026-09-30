@@ -653,7 +653,6 @@ async def sync_loop():
             cfg = api._settings
             if cfg != prev_cfg:
                 prev_cfg = cfg
-                print("Ajustes:", cfg, flush=True)
 
             track_data, synced_lyrics, current_line_idx = await lyrics_main.run_main(cfg, api._token)
             lyric_list = list((synced_lyrics or {}).values())
