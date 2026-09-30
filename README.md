@@ -2,9 +2,6 @@
 
 A desktop app that shows **time-synced lyrics** for whatever you're playing on Spotify. It can also mirror the current lyric line to your Discord status, censor profanity in any number of languages, and decorate the status with emojis.
 
-> [CAUTION]
-> **Discord sync** uses a user account token, which violates Discord's Terms of Service (self-botting). Your account could be banned. Use at your own risk; I accept no responsibility for actions taken against your account.
-
 ![SpotiSync](assets/readme1.png)
 
 ## Features
@@ -18,6 +15,9 @@ A desktop app that shows **time-synced lyrics** for whatever you're playing on S
 
 The app reads the playback position from the Windows media controls, so it doesn't need a Spotify API key or a Spotify login.
 
+> [CAUTION]
+> **Discord sync** uses a user account token, which violates Discord's Terms of Service (self-botting). Your account could be banned. Use at your own risk; I accept no responsibility for actions taken against your account.
+
 ## Requirements
 
 - **Windows 10 / 11** (playback is read through the Windows media session API)
@@ -27,8 +27,8 @@ The app reads the playback position from the Windows media controls, so it doesn
 ## Installation
 
 ```bash
-git clone https://github.com/renvx-0/SpotiSync
-cd spotisync
+git clone https://github.com/renvx-0/SpotiSync.git
+cd SpotiSync
 
 python -m venv .venv
 .venv\Scripts\activate
@@ -36,15 +36,13 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-<!-- TODO: confirm the pip package name that provides the `badwords` module -->
-
 ## Usage
 
 1. Open the Spotify desktop app and play a song.
 2. Run the app:
 
    ```bash
-   python main.py
+   python app.py
    ```
 
 3. Use the panel at the bottom of the window to configure the options below. Changes apply instantly and are saved automatically.

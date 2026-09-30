@@ -80,6 +80,12 @@ pf.init(CENSOR_LANGUAGES)
 censor_status = None
 loaded_langs = None
 
+censor_dir = script_dir / "censor_lists"
+censor_dir.mkdir(parents=True, exist_ok=True)
+
+(censor_dir / "blacklist.txt").touch(exist_ok=True)
+(censor_dir / "whitelist.txt").touch(exist_ok=True)
+
 _blacklist = read_word_list(script_dir / "censor_lists" / "blacklist.txt")
 _whitelist = read_word_list(script_dir / "censor_lists" / "whitelist.txt")
 if _blacklist:
