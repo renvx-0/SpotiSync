@@ -4,6 +4,8 @@ lyric_formatter/
 .env.local
 *.log
 
+SpotiSync.spec
+venv/
 dist/
 build/
 .cache/

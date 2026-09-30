@@ -240,8 +240,11 @@ def get_current_line(secs, sorted_times=None):
     
     return idx, synced_lyrics[sorted_times[idx]]
 
+resolved_artists = None
+resolved_song_key = None
+
 async def run_main(cfg, token):
-    global last_song, synced_lyrics, raw_lyrics, last_line_idx, CENSOR_WORDS, CENSOR_LANGUAGES, SYNC_TO_DISCORD, ADD_EMOJIS, EMOJI_MODE, censor_status, loaded_langs
+    global last_song, synced_lyrics, raw_lyrics, last_line_idx, resolved_artists, resolved_song_key, CENSOR_WORDS, CENSOR_LANGUAGES, SYNC_TO_DISCORD, ADD_EMOJIS, EMOJI_MODE, censor_status, loaded_langs
 
     CENSOR_WORDS = bool(cfg["censor"].get("enabled"))
     CENSOR_LANGUAGES = list(cfg["censor"].get("languages") or [])
@@ -265,6 +268,13 @@ async def run_main(cfg, token):
     discord.change_token(token)
 
     data = await get_spotify_playback()
+    song_key = (
+        data.get("name"),
+        data.get("album"),
+    )
+
+    if data and song_key == resolved_song_key and resolved_artists:
+        data["artist"] = resolved_artists
 
     if (last_song and data) and (last_song.get("name") != data.get("name")) or (not last_song and data):
         discord.change_status("")
@@ -283,7 +293,7 @@ Artist: {data.get("artist")}
         _logged_censor.clear()
 
         try:
-            song_lyrics = await asyncio.to_thread(
+            song_details = await asyncio.to_thread(
                 lyrics_api.search_song_lyrics,
                 data.get("name"),
                 data.get("artist"),
@@ -291,11 +301,22 @@ Artist: {data.get("artist")}
                 data.get("duration")
             )
 
-            if song_lyrics:
-                raw_lyrics = parse_lrc(song_lyrics)
-                synced_lyrics = await asyncio.to_thread(build_synced, raw_lyrics, CENSOR_WORDS)
-            else:
-                print("<-- No synced lyrics found -->")
+            if song_details and song_details.get("lyrics"):
+                if song_details.get("artists"):
+                    data["artist"] = song_details["artists"]
+
+                resolved_artists = song_details["artists"]
+                resolved_song_key = (
+                    data.get("name"),
+                    data.get("album"),
+                )
+
+                raw_lyrics = parse_lrc(song_details["lyrics"])
+                synced_lyrics = await asyncio.to_thread(
+                    build_synced,
+                    raw_lyrics,
+                    CENSOR_WORDS
+                )
         except Exception:
             traceback.print_exc()
 

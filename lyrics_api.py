@@ -1,11 +1,84 @@
 import requests
+import time
 
 def search_song_lyrics(song_name, song_artist, song_album, song_duration):
-    r = requests.get(f"https://lrclib.net/api/get?artist_name={song_artist}&track_name={song_name}&album={song_album}&duration={song_duration}")
-    data = r.json()
+    params = {
+        "track_name": song_name,
+        "artist_name": song_artist,
+    }
 
-    if data.get("syncedLyrics"):
-        return data.get("syncedLyrics").split("\n")
+    if song_album:
+        params["album_name"] = song_album
+
+    try:
+        attempts = 0
+        max_attempts = 3
+        while True:
+            r = requests.get(
+                "https://lrclib.net/api/search",
+                params=params,
+                timeout=10,
+            )
+            if r.ok or attempts >= max_attempts:
+                results = r.json()
+                break
+
+            attempts += 1
+            time.sleep(1 * attempts/2)
+
+    except requests.RequestException as e:
+        print(f"LRCLIB search error: {e}")
+        return None
+
+    if not results:
+        print("<-- No LRCLIB results -->")
+        return None
+    
+    best = None
+    best_diff = float("inf")
+
+    for result in results:
+        duration = result.get("duration")
+
+        if duration is None or song_duration is None:
+            continue
+
+        diff = abs(float(duration) - float(song_duration))
+
+        if diff < best_diff:
+            best = result
+            best_diff = diff
+
+    if best is None or best_diff > 2:
+        print("<-- No matching LRCLIB track -->")
+        return None
+
+    print(
+        f"FOUND: {best.get('trackName')} - "
+        f"{best.get('artistName')} "
+        f"({best.get('duration')}s)"
+    )
+
+    try:
+        r = requests.get(
+            f"https://lrclib.net/api/get/{best['id']}",
+            timeout=10,
+        )
+        r.raise_for_status()
+        data = r.json()
+
+    except requests.RequestException as e:
+        print(f"LRCLIB track error: {e}")
+        return None
+
+    if not data.get("syncedLyrics"):
+        print("<-- No synced lyrics -->")
+        return None
+
+    return {
+        "lyrics": (data["syncedLyrics"].split("\n") or None), 
+        "artists": (data.get("artistName") or song_artist)
+    }
 
 STATUS_MAX_LEN = 128
 

@@ -5,8 +5,7 @@ HTML = """
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
     :root { color-scheme: dark; }
     * { box-sizing: border-box; font-family: Inter, system-ui, sans-serif; margin: 0; padding: 0; }
-    html, body { margin: 0; height: 100%; background: #0d0d0d; color: #fff;
-                 border-radius: 10px; overflow: hidden; }
+    html, body { margin: 0; height: 100%; background: #0d0d0d; color: #fff; overflow: hidden; }
     .bar { height: 30px; position: relative; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; gap: 8px; background-color: #101010; border-bottom: solid 1px #1A1A1A; }
     .drag { position: absolute; inset: 0; }
     .dot { width: 14px; height: 14px; border-radius: 50%; border: 0; cursor: pointer; position: relative; z-index: 1; }
