@@ -1,5 +1,4 @@
-# Dependencias
-lyric_formatter
+lyric_formatter/
 
 .env
 .env.local
